@@ -1,10 +1,10 @@
 import { model, Schema, Document } from 'mongoose';
-import { UserModelDocumentInterface } from './UserModel';
+import { UserModelInterface } from './UserModel';
 
 export interface TweetModelInterface {
   _id?: string;
   text: string;
-  user: string;
+  user: UserModelInterface;
 }
 
 export type TweetModelDocumentInterface = TweetModelInterface & Document;
@@ -13,6 +13,7 @@ const TweetSchema = new Schema<TweetModelInterface>({
   text: {
     required: true,
     type: String,
+    maxlength: 280,
   },
   user: {
     required: true,
@@ -21,4 +22,4 @@ const TweetSchema = new Schema<TweetModelInterface>({
   },
 });
 
-export const TweetModel = model<TweetModelDocumentInterface>('User', TweetSchema);
+export const TweetModel = model<TweetModelDocumentInterface>('Tweet', TweetSchema);

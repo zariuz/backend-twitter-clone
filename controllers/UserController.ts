@@ -25,6 +25,7 @@ class UserController {
     }
   }
 
+  //find user by id
   async show(req: any, res: express.Response): Promise<void> {
     try {
       const userId = req.params.id;

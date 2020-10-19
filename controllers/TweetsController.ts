@@ -1,12 +1,11 @@
-import { UserModelInterface } from './../models/UserModel';
-import { TweetModelInterface } from './../models/TweetModel';
 import express from 'express';
 
 import { validationResult } from 'express-validator';
 import { TweetModel } from '../models/TweetModel';
 import { isValidObjectId } from '../utils/isValidObjectId';
+import { UserModelInterface } from './../models/UserModel';
 
-class TweetController {
+class TweetsController {
   async index(_: any, res: express.Response): Promise<void> {
     try {
       const tweets = await TweetModel.find({}).exec();
@@ -55,14 +54,14 @@ class TweetController {
     try {
       const user = req.user as UserModelInterface;
 
-      if (user) {
+      if (user?._id) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           res.status(400).json({ status: 'error', errors: errors.array() });
           return;
         }
 
-        const data: TweetModelInterface = {
+        const data: any = {
           text: req.body.text,
           user: user._id,
         };
@@ -74,13 +73,46 @@ class TweetController {
           data: tweet,
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error,
+      });
+    }
   }
 
   async delete(req: express.Request, res: express.Response): Promise<void> {
+    const user = req.user as UserModelInterface;
+
     try {
-    } catch (error) {}
+      if (user) {
+        const tweetId = req.params.id;
+
+        if (!isValidObjectId(tweetId)) {
+          res.status(400).send();
+          return;
+        }
+
+        const tweet = await TweetModel.findById(tweetId);
+
+        if (tweet) {
+          if (String(tweet.user._id) === String(user._id)) {
+            tweet.remove();
+            res.send();
+          } else {
+            res.status(403).send();
+          }
+        } else {
+          res.status(404).send();
+        }
+      }
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error,
+      });
+    }
   }
 }
 
-export const TweetCtrl = new TweetController();
+export const TweetsCtrl = new TweetsController();
