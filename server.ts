@@ -23,8 +23,9 @@ app.get('/users/:id', UserCtrl.show);
 
 app.get('/tweets', TweetsCtrl.index);
 app.get('/tweets/:id', TweetsCtrl.show);
-app.post('/tweets', passport.authenticate('jwt'), createTweetsValidations, TweetsCtrl.create);
 app.delete('/tweets/:id', passport.authenticate('jwt'), TweetsCtrl.delete);
+app.patch('/tweets/:id', passport.authenticate('jwt'), createTweetsValidations, TweetsCtrl.update);
+app.post('/tweets', passport.authenticate('jwt'), createTweetsValidations, TweetsCtrl.create);
 
 app.get('/auth/verify', registerValidations, UserCtrl.verify);
 app.post('/auth/register', registerValidations, UserCtrl.create);
